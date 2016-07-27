@@ -1,3 +1,6 @@
+Current status: in progress, plots will not display
+
+
 Welcome to pyQt5Fit, an example of creating a
 cross-platform curve and surface fitting application 
 using tkinter and the pyeq3 fitting library.
