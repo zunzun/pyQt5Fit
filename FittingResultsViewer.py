@@ -2,6 +2,7 @@ import os, sys, pickle
 import pyeq3
 
 from PyQt5.QtWidgets import *
+from PyQt5 import QtCore # inly for QtCore.Qt.WA_DeleteOnClose
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -15,6 +16,9 @@ import AdditionalInfo
 class ApplicationWindow(QMainWindow):
     def __init__(self, pickledEquationFileName):
         QMainWindow.__init__(self)
+
+        # without this, application hangs on close - arrrgh!
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         # first, load the fitted equation
         equationFile = open(pickledEquationFileName, 'rb')
