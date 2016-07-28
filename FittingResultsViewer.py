@@ -3,59 +3,59 @@ import pyeq3
 
 from PyQt5.QtWidgets import *
 
+import matplotlib
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
 # local imports
 import IndividualReports
 import AdditionalInfo
 
 
-class ResultsWidget(QTabWidget):
-    
-    def __init__(self, pickledEquationFileName, parent = None):
-        QTabWidget.__init__(self, parent)
-        
+class ApplicationWindow(QMainWindow):
+    def __init__(self, pickledEquationFileName):
+        QMainWindow.__init__(self)
+
         # first, load the fitted equation
         equationFile = open(pickledEquationFileName, 'rb')
         equation = pickle.load(equationFile)
         equationFile.close()
         
-        '''
-        topLevelNotebook = ttk.Notebook(self)
-        topLevelNotebook.pack()
+        self.central_widget = QTabWidget(self)
 
         # the "graph reports" notebook tab
-        nbGraphReports = ttk.Notebook(topLevelNotebook)
-        nbGraphReports.pack()
-        topLevelNotebook.add(nbGraphReports, text='Graph Reports')
-
+        nbGraphReports = QTabWidget()
+        self.central_widget.addTab(nbGraphReports,'Graph Reports')
+                
         if equation.GetDimensionality() == 2:
-            report = IndividualReports.ModelScatterConfidenceGraph(nbGraphReports, equation)
-            nbGraphReports.addTab(textTab, "Model With 95%Confidence")
+            report = IndividualReports.ModelScatterConfidenceGraph(equation)
+            nbGraphReports.addTab(report, "Model With 95%Confidence")
         else:
-            report = IndividualReports.SurfacePlot(nbGraphReports, equation)
-            nbGraphReports.addTab(textTab, "Surface Plot")
+            report = IndividualReports.SurfacePlot(equation)
+            nbGraphReports.addTab(report, "Surface Plot")
             
-            report = IndividualReports.ContourPlot(nbGraphReports, equation)
-            nbGraphReports.addTab(textTab, "Contour Plot")
+            report = IndividualReports.ContourPlot(equation)
+            nbGraphReports.addTab(report, "Contour Plot")
             
-            report = IndividualReports.ScatterPlot(nbGraphReports, equation)
-            nbGraphReports.addTab(textTab, "Scatter Plot")
+            report = IndividualReports.ScatterPlot(equation)
+            nbGraphReports.addTab(report, "Scatter Plot")
 
-        report = IndividualReports.AbsoluteErrorGraph(nbGraphReports, equation)
-        nbGraphReports.addTab(textTab, "Absolute Error")
+        report = IndividualReports.AbsoluteErrorGraph(equation)
+        nbGraphReports.addTab(report, "Absolute Error")
 
-        report = IndividualReports.AbsoluteErrorHistogram(nbGraphReports, equation)
-        nbGraphReports.addTab(textTab, "Absolute Error Histogram")
+        report = IndividualReports.AbsoluteErrorHistogram(equation)
+        nbGraphReports.addTab(report, "Absolute Error Histogram")
 
         if equation.dataCache.DependentDataContainsZeroFlag != 1:
-            report = IndividualReports.PercentErrorGraph(nbGraphReports, equation)
-            nbGraphReports.addTab(textTab, "Percent Error")
+            report = IndividualReports.PercentErrorGraph(equation)
+            nbGraphReports.addTab(report, "Percent Error")
 
-            report = IndividualReports.PercentErrorHistogram(nbGraphReports, equation)
-            nbGraphReports.addTab(textTab, "Percent Error Histogram")
-'''
+            report = IndividualReports.PercentErrorHistogram(equation)
+            nbGraphReports.addTab(report, "Percent Error Histogram")
+            
         # the "text reports" notebook tab
         nbTextReports = QTabWidget()
-        self.addTab(nbTextReports,'Text Reports')
+        self.central_widget.addTab(nbTextReports,'Text Reports')
                 
         report = IndividualReports.CoefficientAndFitStatistics(equation)
         textWidget = QPlainTextEdit(report) # plain text
@@ -92,7 +92,7 @@ class ResultsWidget(QTabWidget):
 
         # the "source code" notebook tab
         nbSourceCodeReports = QTabWidget()
-        self.addTab(nbSourceCodeReports,'Source Code')
+        self.central_widget.addTab(nbSourceCodeReports,'Source Code')
 
         report = IndividualReports.SourceCodeReport(equation, 'CPP')
         textWidget = QPlainTextEdit(report) # plain text
@@ -101,7 +101,6 @@ class ResultsWidget(QTabWidget):
         textTab = QTabWidget()
         textTab.setLayout(vbox)
         nbSourceCodeReports.addTab(textTab, "C++")
-                    
     
         report = IndividualReports.SourceCodeReport(equation,'CSHARP')
         textWidget = QPlainTextEdit(report) # plain text
@@ -177,7 +176,7 @@ class ResultsWidget(QTabWidget):
 
         # the "additional information" notebook tab
         nbAdditionalInfo = QTabWidget()
-        self.addTab(nbAdditionalInfo,'Additional Information')
+        self.central_widget.addTab(nbAdditionalInfo,'Additional Information')
 
         textWidget = QPlainTextEdit(AdditionalInfo.history) # plain text
         vbox = QVBoxLayout()
@@ -210,16 +209,15 @@ class ResultsWidget(QTabWidget):
         vbox.addWidget(textWidget)
         textTab = QTabWidget()
         textTab.setLayout(vbox)
-        self.addTab(textTab, "List Of All Standard " + str(dim) + "D Equations")
+        self.central_widget.addTab(textTab, "List Of All Standard " + str(dim) + "D Equations")
+
+        self.central_widget.setFocus()
+        self.setCentralWidget(self.central_widget)
 
 
 
+qApp = QApplication(sys.argv)
 
-
-
-
-if __name__ == "__main__":
-   app = QApplication(sys.argv)
-   ex = ResultsWidget('pickledEquationFile')
-   ex.show()
-   sys.exit(app.exec_())
+aw = ApplicationWindow('pickledEquationFile')
+aw.show()
+sys.exit(qApp.exec_())

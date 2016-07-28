@@ -2,9 +2,12 @@ import pickle, inspect, re
 import pyeq3
 import numpy, scipy
 
+from PyQt5.QtWidgets import *
+
 import matplotlib
-matplotlib.use('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 from mpl_toolkits.mplot3d import  Axes3D
 from matplotlib import cm # to colormap 3D surfaces from blue to red
@@ -165,13 +168,14 @@ def CoefficientListing(equation):
 
     return textToReturn
 
+
 def SourceCodeReport(equation, lanuageNameString):
     return eval('pyeq3.outputSourceCodeService().GetOutputSourceCode' + lanuageNameString + '(equation)')
-'''
 
-def AbsoluteErrorGraph(parent, equation):
+
+def AbsoluteErrorGraph(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     axes = f.add_subplot(111)
     dep_data = equation.dataCache.allDataCacheDictionary['DependentData']
     abs_error = equation.modelAbsoluteError
@@ -186,15 +190,13 @@ def AbsoluteErrorGraph(parent, equation):
         
     axes.set_ylabel(" Absolute Error") # Y axis label is always absolute error
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def PercentErrorGraph(parent, equation):
+def PercentErrorGraph(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     axes = f.add_subplot(111)
     dep_data = equation.dataCache.allDataCacheDictionary['DependentData']
     per_error = equation.modelPercentError
@@ -209,14 +211,13 @@ def PercentErrorGraph(parent, equation):
         
     axes.set_ylabel(" Percent Error") # Y axis label is always percent error
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def AbsoluteErrorHistogram(parent, equation):
+def AbsoluteErrorHistogram(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     axes = f.add_subplot(111)
     abs_error = equation.modelAbsoluteError
     bincount = len(abs_error)//2 # integer division
@@ -235,14 +236,13 @@ def AbsoluteErrorHistogram(parent, equation):
     axes.set_xlabel('Absolute Error') # X axis data label
     axes.set_ylabel(" Frequency") # Y axis label is frequency
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def PercentErrorHistogram(parent, equation):
+def PercentErrorHistogram(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     axes = f.add_subplot(111)
     per_error = equation.modelPercentError
     bincount = len(per_error)//2 # integer division
@@ -261,14 +261,13 @@ def PercentErrorHistogram(parent, equation):
     axes.set_xlabel('Percent Error') # X axis data label
     axes.set_ylabel(" Frequency") # Y axis label is frequency
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def ModelScatterConfidenceGraph(parent, equation):
+def ModelScatterConfidenceGraph(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     axes = f.add_subplot(111)
     y_data = equation.dataCache.allDataCacheDictionary['DependentData']
     x_data = equation.dataCache.allDataCacheDictionary['IndependentData'][0]
@@ -318,14 +317,13 @@ def ModelScatterConfidenceGraph(parent, equation):
     axes.set_xlabel('X Data') # X axis data label
     axes.set_ylabel('Y Data') # Y axis data label
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def SurfacePlot(parent, equation):
+def SurfacePlot(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     
     matplotlib.pyplot.grid(True)
     axes = Axes3D(f)
@@ -353,14 +351,13 @@ def SurfacePlot(parent, equation):
     axes.set_ylabel('Y Data') # Y axis data label
     axes.set_zlabel('Z Data') # Z axis data label
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def ContourPlot(parent, equation):
+def ContourPlot(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     axes = f.add_subplot(111)
 
     x_data = equation.dataCache.allDataCacheDictionary['IndependentData'][0]
@@ -387,14 +384,13 @@ def ContourPlot(parent, equation):
     CS = matplotlib.pyplot.contour(X, Y, Z, numberOfContourLines, colors='k')
     matplotlib.pyplot.clabel(CS, inline=1, fontsize=10) # labels for contours
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
 
-def ScatterPlot(parent, equation):
+def ScatterPlot(equation):
     f = plt.figure(figsize=(graphWidth/100.0, graphHeight/100.0), dpi=100)
-    canvas = FigureCanvasTkAgg(f, master=parent)
+    canvas = FigureCanvas(f)
     
     matplotlib.pyplot.grid(True)
     axes = Axes3D(f)
@@ -409,11 +405,10 @@ def ScatterPlot(parent, equation):
     axes.set_ylabel('Y Data')
     axes.set_zlabel('Z Data')
 
-    canvas.show()
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas.get_tk_widget()
+    return canvas
 
-'''
+
 def AllEquationReport(dim):
         htmlToReturn = '' # build this as we progress
         

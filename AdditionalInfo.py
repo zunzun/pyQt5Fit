@@ -3,7 +3,7 @@ URL for animated "Common Problems In Curve Fitting":
 http://commonproblems.readthedocs.io/
 
 URL for source code of this computer program:
-https://github.com/zunzun/tkInterFit
+https://github.com/zunzun/pyQt5Fit
 
 URL for web version of this code, which generates \
 PDF files and animated 3D surface rotations:
@@ -17,7 +17,7 @@ https://github.com/zunzun/pyeq3
 '''
 
 author = '''
-This is James Phillips, author of tkInterFit. My background is in \
+This is James Phillips, author of pyQt5Fit. My background is in \
 nuclear engineering and industrial radiation physics, as I started \
 working in the U.S. Navy as a submarine nuclear reactor operator \
 many, many neutrons ago.
@@ -45,7 +45,7 @@ measurement can be made - but this is now a 3D surface fit, and I started \
 writing surface fitting software. I began to do considerable international work.
 
 This finally led to the development of my Python fitting libraries, and \
-this example tkinter curve and surface fitter. I also have Python 2 and 3 \
+this example pyQt5 curve and surface fitter. I also have Python 2 and 3 \
 wxPython and django versions on GitHub.
 
 James
