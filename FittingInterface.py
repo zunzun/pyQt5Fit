@@ -151,11 +151,34 @@ class InterfaceWindow(QWidget):
             self.targetSelectButtonGroup_3D.addButton(rb, index)
             index += 1
 
-
             # ROW 9 - empty label as visual buffer
             row, col = (9, 0)
         l = QLabel("   ")
         grid.addWidget(l, row, col)
+
+        # ROW 10 - fitting buttons
+        row, col = (10, 1)
+        self.buttonFit_2D = QPushButton("Fit 2D Text Data", self)
+        self.buttonFit_2D.clicked.connect(self.onFit_2D)
+        grid.addWidget(self.buttonFit_2D, row, col)
+    
+        row, col = (10, 3)
+        self.buttonFit_3D = QPushButton("Fit 3D Text Data", self)
+        self.buttonFit_3D.clicked.connect(self.onFit_3D)
+        grid.addWidget(self.buttonFit_3D, row, col)
+
+        # ROW 11 - empty label as visual buffer
+        row, col = (11, 0)
+        l = QLabel("   ")
+        grid.addWidget(l, row, col)
+
+
+    def onFit_2D(self):
+        print('2D fitting button')
+
+
+    def onFit_3D(self):
+        print('3D fitting button')
 
 
     def onTargetSelect_2D(self):
