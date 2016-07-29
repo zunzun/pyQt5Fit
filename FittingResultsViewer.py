@@ -13,7 +13,7 @@ import IndividualReports
 import AdditionalInfo
 
 
-class ApplicationWindow(QMainWindow):
+class ResultsWindow(QMainWindow):
     def __init__(self, pickledEquationFileName):
         QMainWindow.__init__(self)
 
@@ -220,8 +220,9 @@ class ApplicationWindow(QMainWindow):
 
 
 
-qApp = QApplication(sys.argv)
+if __name__ == "__main__":
+    qApp = QApplication(sys.argv)
 
-aw = ApplicationWindow('pickledEquationFile')
-aw.show()
-sys.exit(qApp.exec_())
+    aw = ResultsWindow('pickledEquationFile')
+    aw.show()
+    sys.exit(qApp.exec_())
