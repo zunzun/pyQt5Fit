@@ -1,18 +1,22 @@
-import os, sys, pickle
+import os, sys, queue, pickle, time
 import pyeq3
 
 from PyQt5.QtWidgets import *
-
 
 # local imports
 import DataForControls as dfc
 
 
-
 class InterfaceWindow(QWidget):
-
     def __init__(self):
         QWidget.__init__(self)
+
+        self.queue = queue.Queue()
+
+        self.equationSelect_2D = 0
+        self.equationSelect_3D = 0
+        self.fittingTargetSelect_2D = 0
+        self.fittingTargetSelect_3D = 0
         
         grid = QGridLayout()
         self.setLayout(grid)
@@ -174,7 +178,68 @@ class InterfaceWindow(QWidget):
 
 
     def onFit_2D(self):
-        print('2D fitting button')
+        textData = self.text_2D.toPlainText()
+        equationSelection = dfc.exampleEquationList_2D[self.equationSelect_2D]
+        fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_2D]
+
+        # the GUI's fitting target string contains what we need - extract it
+        fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
+
+        if equationSelection == 'Linear Polynomial':
+            self.equation = pyeq3.Models_2D.Polynomial.Linear(fittingTarget)
+        if equationSelection == 'Quadratic Polynomial':
+            self.equation = pyeq3.Models_2D.Polynomial.Quadratic(fittingTarget)
+        if equationSelection == 'Cubic Polynomial':
+            self.equation = pyeq3.Models_2D.Polynomial.Cubic(fittingTarget)
+        if equationSelection == 'Witch Of Maria Agnesi A':
+            self.equation = pyeq3.Models_2D.Miscellaneous.WitchOfAgnesiA(fittingTarget)
+        if equationSelection == 'VanDeemter Chromatography':
+            self.equation = pyeq3.Models_2D.Engineering.VanDeemterChromatography(fittingTarget)
+        if equationSelection == 'Gamma Ray Angular Distribution (degrees) B':
+            self.equation = pyeq3.Models_2D.LegendrePolynomial.GammaRayAngularDistributionDegreesB(fittingTarget)
+        if equationSelection == 'Exponential With Offset':
+            self.equation = pyeq3.Models_2D.Exponential.Exponential(fittingTarget, 'Offset')
+
+        # convert text to numeric data checking for log of negative numbers, etc.
+        try:
+            pyeq3.dataConvertorService().ConvertAndSortColumnarASCII(textData, self.equation, False)
+        except:
+            QMessageBox.question(self, 'Warning',
+                     self.equation.reasonWhyDataRejected, QMessageBox.Ok)
+            return
+
+        # check for number of coefficients > number of data points to be fitted
+        coeffCount = len(self.equation.GetCoefficientDesignators())
+        dataCount = len(self.equation.dataCache.allDataCacheDictionary['DependentData'])
+        if coeffCount > dataCount:
+            QMessageBox.question(self, 'Warning',
+                     "This equation requires a minimum of " + str(coeffCount) + " data points, you have supplied " + repr(dataCount) + ".", QMessageBox.Ok)
+            return
+        
+    '''
+        # Now the status dialog is used. Disable fitting buttons until thread completes
+        self.buttonFit_2D.config(state=tk.DISABLED)
+        self.buttonFit_3D.config(state=tk.DISABLED)
+        
+        # create simple top-level text dialog to display status as fitting progresses
+        # when the fitting thread completes, it will close the status box
+        self.statusBox = tk.Toplevel()
+        self.statusBox.title("Fitting Status")
+        self.statusBox.text = tk.Text(self.statusBox)
+        self.statusBox.text.pack()
+        
+        # in tkinter the status box must be manually centered
+        self.statusBox.update_idletasks()
+        width = self.statusBox.winfo_width()
+        height = self.statusBox.winfo_height()
+        x = (self.statusBox.winfo_screenwidth() // 2) - (width // 2) # integer division
+        y = (self.statusBox.winfo_screenheight() // 2) - (height // 2) # integer division
+        self.statusBox.geometry('{}x{}+{}+{}'.format(width, height, x, y))        
+
+        # thread will automatically start to run
+        # "status update" handler will re-enable buttons
+        self.fittingWorkerThread = FittingThread.FittingThread(self, self.equation)
+'''
 
 
     def onFit_3D(self):
@@ -185,30 +250,28 @@ class InterfaceWindow(QWidget):
         ID = self.targetSelectButtonGroup_2D.checkedId()
         if ID < 0: # initializes at -1, should be zero
             ID = 0
-        print('2D target:', ID) # ID was set using QButtonGroup's addButton() method above
+        self.fittingTargetSelect_2D = ID
 
 
     def onTargetSelect_3D(self):
         ID = self.targetSelectButtonGroup_3D.checkedId()
         if ID < 0: # initializes at -1, should be zero
             ID = 0
-        print('3D target:', ID) # ID was set using QButtonGroup's addButton() method above
+        self.fittingTargetSelect_3D = ID
 
 
     def onEquationSelect_2D(self):
         ID = self.eqSelectButtonGroup_2D.checkedId()
         if ID < 0: # initializes at -1, should be zero
             ID = 0
-        print('2D Eq:', ID) # ID was set using QButtonGroup's addButton() method above
+        self.equationSelect_2D = ID
 
 
     def onEquationSelect_3D(self):
         ID = self.eqSelectButtonGroup_3D.checkedId()
         if ID < 0: # initializes at -1, should be zero
             ID = 0
-        print('3D Eq:', ID) # ID was set using QButtonGroup's addButton() method above
-
-
+        self.equationSelect_3D = ID
 
 
 
