@@ -183,11 +183,6 @@ class InterfaceWindow(QWidget):
         self.buttonFit_3D.clicked.connect(self.onFit_3D)
         grid.addWidget(self.buttonFit_3D, row, col)
 
-        # ROW 11 - empty label as visual buffer
-        row, col = (11, 0)
-        l = QLabel("   ")
-        grid.addWidget(l, row, col)
-
 
     def onFit_2D(self):
         textData = self.text_2D.toPlainText()
