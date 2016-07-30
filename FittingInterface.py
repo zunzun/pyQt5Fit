@@ -1,16 +1,28 @@
 import os, sys, queue, pickle, time
 import pyeq3
 
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
 # local imports
 import DataForControls as dfc
+import FittingThread
+
+
+class StatusUpdateSignal(QObject):
+    statusUpdate = pyqtSignal() 
+
 
 
 class InterfaceWindow(QWidget):
+
     def __init__(self):
         QWidget.__init__(self)
 
+        # http://zetcode.com/gui/pyqt5/eventssignals/
+        self.updateStatusSignal = StatusUpdateSignal()
+        self.updateStatusSignal.statusUpdate.connect(self.onUpdateStatus)
+        
         self.queue = queue.Queue()
 
         self.equationSelect_2D = 0
@@ -215,36 +227,94 @@ class InterfaceWindow(QWidget):
             QMessageBox.question(self, 'Warning',
                      "This equation requires a minimum of " + str(coeffCount) + " data points, you have supplied " + repr(dataCount) + ".", QMessageBox.Ok)
             return
-        
-    '''
+            
+
         # Now the status dialog is used. Disable fitting buttons until thread completes
-        self.buttonFit_2D.config(state=tk.DISABLED)
-        self.buttonFit_3D.config(state=tk.DISABLED)
-        
-        # create simple top-level text dialog to display status as fitting progresses
-        # when the fitting thread completes, it will close the status box
-        self.statusBox = tk.Toplevel()
-        self.statusBox.title("Fitting Status")
-        self.statusBox.text = tk.Text(self.statusBox)
-        self.statusBox.text.pack()
-        
-        # in tkinter the status box must be manually centered
-        self.statusBox.update_idletasks()
-        width = self.statusBox.winfo_width()
-        height = self.statusBox.winfo_height()
-        x = (self.statusBox.winfo_screenwidth() // 2) - (width // 2) # integer division
-        y = (self.statusBox.winfo_screenheight() // 2) - (height // 2) # integer division
-        self.statusBox.geometry('{}x{}+{}+{}'.format(width, height, x, y))        
+        self.statusBox = QDialog(self)
+        self.statusBox.text = QPlainTextEdit('', self.statusBox) # plain text
+        self.statusBox.setGeometry(300, 300, 290, 150)
+        self.statusBox.setWindowTitle('Fitting Status')
 
         # thread will automatically start to run
-        # "status update" handler will re-enable buttons
         self.fittingWorkerThread = FittingThread.FittingThread(self, self.equation)
-'''
+
+        self.statusBox.exec_()  # blocks all other windows until this window is closed
 
 
     def onFit_3D(self):
-        print('3D fitting button')
+        textData = self.text_3D.toPlainText()
+        equationSelection = dfc.exampleEquationList_3D[self.equationSelect_3D]
+        fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_3D]
 
+        # the GUI's fitting target string contains what we need - extract it
+        fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
+
+        if equationSelection == 'Linear Polynomial':
+            self.equation = pyeq3.Models_3D.Polynomial.Linear(fittingTarget)
+        if equationSelection == 'Full Quadratic Polynomial':
+            self.equation = pyeq3.Models_3D.Polynomial.FullQuadratic(fittingTarget)
+        if equationSelection == 'Full Cubic Polynomial':
+            self.equation = pyeq3.Models_3D.Polynomial.FullCubic(fittingTarget)
+        if equationSelection == 'Monkey Saddle A':
+            self.equation = pyeq3.Models_3D.Miscellaneous.MonkeySaddleA(fittingTarget)
+        if equationSelection == 'Gaussian Curvature Of Whitneys Umbrella A':
+            self.equation = pyeq3.Models_3D.Miscellaneous.GaussianCurvatureOfWhitneysUmbrellaA(fittingTarget)
+        if equationSelection == 'NIST Nelson Autolog':
+            self.equation = pyeq3.Models_3D.NIST.NIST_NelsonAutolog(fittingTarget)
+        if equationSelection == 'Custom Polynomial One':
+            self.equation = pyeq3.Models_3D.Polynomial.UserSelectablePolynomial(fittingTarget, "Default", 3, 1)
+
+        # convert text to numeric data checking for log of negative numbers, etc.
+        try:
+            pyeq3.dataConvertorService().ConvertAndSortColumnarASCII(textData, self.equation, False)
+        except:
+            QMessageBox.question(self, 'Warning',
+                     self.equation.reasonWhyDataRejected, QMessageBox.Ok)
+            return
+
+        # check for number of coefficients > number of data points to be fitted
+        coeffCount = len(self.equation.GetCoefficientDesignators())
+        dataCount = len(self.equation.dataCache.allDataCacheDictionary['DependentData'])
+        if coeffCount > dataCount:
+            QMessageBox.question(self, 'Warning',
+                     "This equation requires a minimum of " + str(coeffCount) + " data points, you have supplied " + repr(dataCount) + ".", QMessageBox.Ok)
+            return
+            
+
+        # Now the status dialog is used. Disable fitting buttons until thread completes
+        self.statusBox = QDialog(self)
+        self.statusBox.text = QPlainTextEdit('', self.statusBox) # plain text
+        self.statusBox.setGeometry(300, 300, 290, 150)
+        self.statusBox.setWindowTitle('Fitting Status')
+
+        # thread will automatically start to run
+        self.fittingWorkerThread = FittingThread.FittingThread(self, self.equation)
+
+        self.statusBox.exec_()  # blocks all other windows until this window is closed
+
+
+    def onUpdateStatus(self):
+        data = self.queue.get_nowait()
+        
+        if type(data) == type(''): # text is used for status box display to user
+            self.statusBox.text.appendPlainText(data + '\n')
+        else: # the queue data is now the fitted equation.
+            # write the fitted equation to a pickle file.  This
+            # allows the possibility of archiving the fitted equations
+            pickledEquationFile = open("pickledEquationFile", "wb")
+            pickle.dump(data, pickledEquationFile)
+            pickledEquationFile.close()
+    
+            # view fitting results
+            # allow multiple result windows to open for comparisons
+            os.popen(sys.executable + ' FittingResultsViewer.py')
+            
+            # give the system a few seconds to start the reporting application
+            time.sleep(5.0)
+       
+            # close the now-unused status box
+            self.statusBox.close()
+        
 
     def onTargetSelect_2D(self):
         ID = self.targetSelectButtonGroup_2D.checkedId()
