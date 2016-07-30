@@ -430,7 +430,7 @@ def AllEquationReport(dim):
                             equation = equationClass[1]('SSQABS', extendedVersionName)
                             htmlToReturn += '<tr>'
                             htmlToReturn += '<td nowrap><b>' + str(dim) + 'D ' + submodule[0] + '</b></td>'
-                            htmlToReturn += '<td nowrap><i>' + equation.GetDisplayName() + '>/i></td>'
+                            htmlToReturn += '<td nowrap><i>' + equation.GetDisplayName() + '</i></td>'
                             htmlToReturn += '<td nowrap>' + equation.GetDisplayHTML() + '</td>'
                             htmlToReturn += '</tr>'
                             
