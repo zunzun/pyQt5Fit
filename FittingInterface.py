@@ -84,6 +84,7 @@ class InterfaceWindow(QWidget):
         w = QWidget()
         vBox = QVBoxLayout()
         vBox.setSpacing(0)
+        vBox.setContentsMargins(0,0,0,0)
         w.setLayout(vBox)
         grid.addWidget(w, row, col)
 
@@ -102,6 +103,7 @@ class InterfaceWindow(QWidget):
         w = QWidget()
         vBox = QVBoxLayout()
         vBox.setSpacing(0)
+        vBox.setContentsMargins(0,0,0,0)
         w.setLayout(vBox)
         grid.addWidget(w, row, col)
 
@@ -136,6 +138,7 @@ class InterfaceWindow(QWidget):
         w = QWidget()
         vBox = QVBoxLayout()
         vBox.setSpacing(0)
+        vBox.setContentsMargins(0,0,0,0)
         w.setLayout(vBox)
         grid.addWidget(w, row, col)
 
@@ -154,6 +157,7 @@ class InterfaceWindow(QWidget):
         w = QWidget()
         vBox = QVBoxLayout()
         vBox.setSpacing(0)
+        vBox.setContentsMargins(0,0,0,0)
         w.setLayout(vBox)
         grid.addWidget(w, row, col)
 
