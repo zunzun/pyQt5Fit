@@ -187,6 +187,11 @@ class InterfaceWindow(QWidget):
         self.buttonFit_3D.clicked.connect(self.onFit_3D)
         grid.addWidget(self.buttonFit_3D, row, col)
 
+        # center window on the screen
+        resolution = QDesktopWidget().screenGeometry()
+        self.move((resolution.width() // 2) - (self.frameSize().width() // 2),
+                  (resolution.height() // 2) - (self.frameSize().height() // 2))
+
 
     def onFit_2D(self):
         textData = self.text_2D.toPlainText()

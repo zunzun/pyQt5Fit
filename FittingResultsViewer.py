@@ -218,6 +218,11 @@ class ResultsWindow(QMainWindow):
         self.central_widget.setFocus()
         self.setCentralWidget(self.central_widget)
 
+        # center window on the screen
+        resolution = QDesktopWidget().screenGeometry()
+        self.move((resolution.width() // 2) - (self.frameSize().width() // 2),
+                  (resolution.height() // 2) - (self.frameSize().height() // 2))
+
 
 
 if __name__ == "__main__":
