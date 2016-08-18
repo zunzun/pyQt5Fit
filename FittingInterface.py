@@ -89,7 +89,7 @@ class InterfaceWindow(QWidget):
         grid.addWidget(w, row, col)
 
         index=0
-        for exampleEquationText in dfc.exampleEquationList_2D:
+        for exampleEquationText in dfc.eq_od2D.keys():
             rb = QRadioButton(exampleEquationText)
             rb.toggled.connect(lambda:self.onEquationSelect_2D())
             if index == 0:
@@ -108,7 +108,7 @@ class InterfaceWindow(QWidget):
         grid.addWidget(w, row, col)
 
         index=0
-        for exampleEquationText in dfc.exampleEquationList_3D:
+        for exampleEquationText in dfc.eq_od3D.keys():
             rb = QRadioButton(exampleEquationText)
             rb.toggled.connect(lambda:self.onEquationSelect_3D())
             if index == 0:
@@ -195,26 +195,15 @@ class InterfaceWindow(QWidget):
 
     def onFit_2D(self):
         textData = self.text_2D.toPlainText()
-        equationSelection = dfc.exampleEquationList_2D[self.equationSelect_2D]
+        equationSelection = list(dfc.eq_od2D.keys())[self.equationSelect_2D]
         fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_2D]
 
         # the GUI's fitting target string contains what we need - extract it
         fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
 
-        if equationSelection == 'Linear Polynomial':
-            self.equation = pyeq3.Models_2D.Polynomial.Linear(fittingTarget)
-        if equationSelection == 'Quadratic Polynomial':
-            self.equation = pyeq3.Models_2D.Polynomial.Quadratic(fittingTarget)
-        if equationSelection == 'Cubic Polynomial':
-            self.equation = pyeq3.Models_2D.Polynomial.Cubic(fittingTarget)
-        if equationSelection == 'Witch Of Maria Agnesi A':
-            self.equation = pyeq3.Models_2D.Miscellaneous.WitchOfAgnesiA(fittingTarget)
-        if equationSelection == 'VanDeemter Chromatography':
-            self.equation = pyeq3.Models_2D.Engineering.VanDeemterChromatography(fittingTarget)
-        if equationSelection == 'Gamma Ray Angular Distribution (degrees) B':
-            self.equation = pyeq3.Models_2D.LegendrePolynomial.GammaRayAngularDistributionDegreesB(fittingTarget)
-        if equationSelection == 'Exponential With Offset':
-            self.equation = pyeq3.Models_2D.Exponential.Exponential(fittingTarget, 'Offset')
+        item = dfc.eq_od2D[equationSelection]
+        eqString = 'pyeq3.Models_2D.' + item[0] + '(fittingTarget, ' + "'" + item[1] + "'" + item[2] + ')'
+        self.equation = eval(eqString)
 
         # convert text to numeric data checking for log of negative numbers, etc.
         try:
@@ -247,26 +236,15 @@ class InterfaceWindow(QWidget):
 
     def onFit_3D(self):
         textData = self.text_3D.toPlainText()
-        equationSelection = dfc.exampleEquationList_3D[self.equationSelect_3D]
+        equationSelection = list(dfc.eq_od3D.keys())[self.equationSelect_3D]
         fittingTargetSelection = dfc.fittingTargetList[self.fittingTargetSelect_3D]
 
         # the GUI's fitting target string contains what we need - extract it
         fittingTarget = fittingTargetSelection.split('(')[1].split(')')[0]
 
-        if equationSelection == 'Linear Polynomial':
-            self.equation = pyeq3.Models_3D.Polynomial.Linear(fittingTarget)
-        if equationSelection == 'Full Quadratic Polynomial':
-            self.equation = pyeq3.Models_3D.Polynomial.FullQuadratic(fittingTarget)
-        if equationSelection == 'Full Cubic Polynomial':
-            self.equation = pyeq3.Models_3D.Polynomial.FullCubic(fittingTarget)
-        if equationSelection == 'Monkey Saddle A':
-            self.equation = pyeq3.Models_3D.Miscellaneous.MonkeySaddleA(fittingTarget)
-        if equationSelection == 'Gaussian Curvature Of Whitneys Umbrella A':
-            self.equation = pyeq3.Models_3D.Miscellaneous.GaussianCurvatureOfWhitneysUmbrellaA(fittingTarget)
-        if equationSelection == 'NIST Nelson Autolog':
-            self.equation = pyeq3.Models_3D.NIST.NIST_NelsonAutolog(fittingTarget)
-        if equationSelection == 'Custom Polynomial One':
-            self.equation = pyeq3.Models_3D.Polynomial.UserSelectablePolynomial(fittingTarget, "Default", 3, 1)
+        item = dfc.eq_od3D[equationSelection]
+        eqString = 'pyeq3.Models_3D.' + item[0] + '(fittingTarget, ' + "'" + item[1] + "'" + item[2] + ')'
+        self.equation = eval(eqString)
 
         # convert text to numeric data checking for log of negative numbers, etc.
         try:
