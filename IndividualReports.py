@@ -191,7 +191,7 @@ def AbsoluteErrorGraph(equation):
     axes.set_ylabel(" Absolute Error") # Y axis label is always absolute error
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def PercentErrorGraph(equation):
@@ -212,7 +212,7 @@ def PercentErrorGraph(equation):
     axes.set_ylabel(" Percent Error") # Y axis label is always percent error
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def AbsoluteErrorHistogram(equation):
@@ -237,7 +237,7 @@ def AbsoluteErrorHistogram(equation):
     axes.set_ylabel(" Frequency") # Y axis label is frequency
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def PercentErrorHistogram(equation):
@@ -262,7 +262,7 @@ def PercentErrorHistogram(equation):
     axes.set_ylabel(" Frequency") # Y axis label is frequency
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def ModelScatterConfidenceGraph(equation):
@@ -318,7 +318,7 @@ def ModelScatterConfidenceGraph(equation):
     axes.set_ylabel('Y Data') # Y axis data label
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def SurfacePlot(equation):
@@ -352,7 +352,7 @@ def SurfacePlot(equation):
     axes.set_zlabel('Z Data') # Z axis data label
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def ContourPlot(equation):
@@ -385,7 +385,7 @@ def ContourPlot(equation):
     matplotlib.pyplot.clabel(CS, inline=1, fontsize=10) # labels for contours
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def ScatterPlot(equation):
@@ -406,7 +406,7 @@ def ScatterPlot(equation):
     axes.set_zlabel('Z Data')
 
     plt.close('all') # clean up after using pyplot or else thaere can be memory and process problems
-    return canvas
+    return [canvas, f]
 
 
 def AllEquationReport(dim):

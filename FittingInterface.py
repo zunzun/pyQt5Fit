@@ -289,11 +289,9 @@ class InterfaceWindow(QWidget):
     
             # view fitting results
             # allow multiple result windows to open for comparisons
-            os.popen(sys.executable + ' FittingResultsViewer.py')
+            p = os.popen(sys.executable + ' FittingResultsViewer.py')
+            p.close()
             
-            # give the system a few seconds to start the reporting application
-            time.sleep(5.0)
-       
             # close the now-unused status box
             self.statusBox.close()
         
