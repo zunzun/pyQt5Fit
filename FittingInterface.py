@@ -57,10 +57,12 @@ class InterfaceWindow(QWidget):
         # ROW 2 - text data input, no line wrap
         row, col = (2, 1)
         self.text_2D = QPlainTextEdit(dfc.exampleText_2D) # plain text
+        self.text_2D.setMinimumHeight(200)
         grid.addWidget(self.text_2D, row, col)
 
         row, col = (2, 3)
         self.text_3D = QPlainTextEdit(dfc.exampleText_3D) # plain text
+        self.text_2D.setMinimumHeight(200)
         grid.addWidget(self.text_3D, row, col)
 
         # ROW 3 - empty label as visual buffer
