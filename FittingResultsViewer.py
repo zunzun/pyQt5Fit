@@ -32,8 +32,13 @@ class ResultsWindow(QMainWindow):
         self.central_widget.addTab(nbGraphReports,'Graph Reports')
                 
         if self.equation.GetDimensionality() == 2:
-            report = IndividualReports.ModelScatterConfidenceGraph(self.equation)
+            report = IndividualReports.ModelScatterConfidenceGraph(self.equation, scatterplotOnlyFlag=False)
             reportTitle = "Model With 95%Confidence"
+            nbGraphReports.addTab(report[0], reportTitle)
+            self.graphReportsListForPDF.append([report[1], reportTitle])
+
+            report = IndividualReports.ModelScatterConfidenceGraph(self.equation, scatterplotOnlyFlag=True)
+            reportTitle = "Scatter Plot"
             nbGraphReports.addTab(report[0], reportTitle)
             self.graphReportsListForPDF.append([report[1], reportTitle])
         else:
