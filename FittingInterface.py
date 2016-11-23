@@ -87,7 +87,6 @@ class InterfaceWindow(QWidget):
         self.cb_Modules2D = QComboBox(self)
         self.cb_Modules2D.activated.connect(self.moduleSelectChanged_2D)
         moduleNameList = list(dfc.eq_od2D.keys())
-        moduleNameList.remove('Rational') # has no 2D equations used here
         self.cb_Modules2D.addItems(moduleNameList)
         self.cb_Modules2D.setCurrentIndex(moduleNameList.index('Polynomial'))
         
