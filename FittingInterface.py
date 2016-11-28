@@ -86,12 +86,12 @@ class InterfaceWindow(QWidget):
         row, col = (5, 1)
         self.cb_Modules2D = QComboBox(self)
         self.cb_Modules2D.activated.connect(self.moduleSelectChanged_2D)
-        moduleNameList = list(dfc.eq_od2D.keys())
+        moduleNameList = sorted(list(dfc.eq_od2D.keys()))
         self.cb_Modules2D.addItems(moduleNameList)
         self.cb_Modules2D.setCurrentIndex(moduleNameList.index('Polynomial'))
         
         self.cb_Equations2D = QComboBox(self)
-        equationNameList = self.GetEquationListForModule(2, 'Polynomial')
+        equationNameList = sorted(list(dfc.eq_od2D['Polynomial'].keys()))
         self.cb_Equations2D.addItems(equationNameList)
         self.cb_Equations2D.setCurrentIndex(equationNameList.index('1st Order (Linear)'))
 
@@ -107,12 +107,12 @@ class InterfaceWindow(QWidget):
         row, col = (5, 3)
         self.cb_Modules3D = QComboBox(self)
         self.cb_Modules3D.activated.connect(self.moduleSelectChanged_3D)
-        moduleNameList = list(dfc.eq_od3D.keys())
+        moduleNameList = sorted(list(dfc.eq_od3D.keys()))
         self.cb_Modules3D.addItems(moduleNameList)
         self.cb_Modules3D.setCurrentIndex(moduleNameList.index('Polynomial'))
         
         self.cb_Equations3D = QComboBox(self)
-        equationNameList = self.GetEquationListForModule(3, 'Polynomial')
+        equationNameList = sorted(list(dfc.eq_od3D['Polynomial'].keys()))
         self.cb_Equations3D.addItems(equationNameList)
         self.cb_Equations3D.setCurrentIndex(equationNameList.index('Linear'))
 
@@ -201,40 +201,10 @@ class InterfaceWindow(QWidget):
                   (resolution.height() // 2) - (self.frameSize().height() // 2))
 
 
-    def GetEquationListForModule(self, inDimension, inModuleName):
-        strModule = 'pyeq3.Models_' + str(inDimension) + 'D.' + inModuleName
-        moduleMembers = inspect.getmembers(eval(strModule))
-        returnList = []
-        for equationClass in moduleMembers:
-            if inspect.isclass(equationClass[1]):
-                for extendedVersionName in ['Default', 'Offset']:
-                    
-                    # if the equation *already* has an offset,
-                    # do not add an offset version here
-                    if (-1 != extendedVersionName.find('Offset')) and (equationClass[1].autoGenerateOffsetForm == False):
-                        continue
-                        
-                    # in this application, exclude equation than need extra input
-                    if equationClass[1].splineFlag or \
-                            equationClass[1].userSelectablePolynomialFlag or \
-                            equationClass[1].userCustomizablePolynomialFlag or \
-                            equationClass[1].userSelectablePolyfunctionalFlag or \
-                            equationClass[1].userSelectableRationalFlag or \
-                            equationClass[1].userDefinedFunctionFlag:
-                        continue
-
-                    equation = equationClass[1]('SSQABS', extendedVersionName)
-
-                    returnList.append(equation.GetDisplayName())
-
-        returnList.sort()
-        return returnList
-
-
     def moduleSelectChanged_2D(self):
         listIndex = self.cb_Modules2D.currentIndex()
-        moduleName = list(dfc.eq_od2D.keys())[listIndex]
-        equationNameList = self.GetEquationListForModule(2, moduleName)
+        moduleName = sorted(list(dfc.eq_od2D.keys()))[listIndex]
+        equationNameList = sorted(list(dfc.eq_od2D[moduleName].keys()))
         self.cb_Equations2D.clear()
         self.cb_Equations2D.addItems(equationNameList)
         self.cb_Equations2D.setCurrentIndex(0)
@@ -242,8 +212,8 @@ class InterfaceWindow(QWidget):
 
     def moduleSelectChanged_3D(self):
         listIndex = self.cb_Modules3D.currentIndex()
-        moduleName = list(dfc.eq_od3D.keys())[listIndex]
-        equationNameList = self.GetEquationListForModule(3, moduleName)
+        moduleName = sorted(list(dfc.eq_od3D.keys()))[listIndex]
+        equationNameList = sorted(list(dfc.eq_od3D[moduleName].keys()))
         self.cb_Equations3D.clear()
         self.cb_Equations3D.addItems(equationNameList)
         self.cb_Equations3D.setCurrentIndex(0)
@@ -253,9 +223,9 @@ class InterfaceWindow(QWidget):
         textData = self.text_2D.toPlainText()
 
         moduleListIndex = self.cb_Modules2D.currentIndex()
-        moduleName = list(dfc.eq_od2D.keys())[moduleListIndex]
+        moduleName = sorted(list(dfc.eq_od2D.keys())[moduleListIndex])
         equationListIndex = self.cb_Equations2D.currentIndex()
-        equationNameList = self.GetEquationListForModule(2, moduleName)
+        equationNameList = sorted(list(dfc.eq_od2D[moduleName].keys()))
         equationName = equationNameList[equationListIndex]
 
         # the GUI's fitting target string contains what we need - extract it
@@ -299,9 +269,9 @@ class InterfaceWindow(QWidget):
         textData = self.text_3D.toPlainText()
 
         moduleListIndex = self.cb_Modules3D.currentIndex()
-        moduleName = list(dfc.eq_od3D.keys())[moduleListIndex]
+        moduleName = sorted(list(dfc.eq_od3D.keys())[moduleListIndex])
         equationListIndex = self.cb_Equations3D.currentIndex()
-        equationNameList = self.GetEquationListForModule(3, moduleName)
+        equationNameList = sorted(list(dfc.eq_od3D[moduleName].keys()))
         equationName = equationNameList[equationListIndex]
 
         # the GUI's fitting target string contains what we need - extract it
