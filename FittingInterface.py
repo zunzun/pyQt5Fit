@@ -223,7 +223,7 @@ class InterfaceWindow(QWidget):
         textData = self.text_2D.toPlainText()
 
         moduleListIndex = self.cb_Modules2D.currentIndex()
-        moduleName = sorted(list(dfc.eq_od2D.keys())[moduleListIndex])
+        moduleName = sorted(list(dfc.eq_od2D.keys()))[moduleListIndex]
         equationListIndex = self.cb_Equations2D.currentIndex()
         equationNameList = sorted(list(dfc.eq_od2D[moduleName].keys()))
         equationName = equationNameList[equationListIndex]
@@ -269,7 +269,7 @@ class InterfaceWindow(QWidget):
         textData = self.text_3D.toPlainText()
 
         moduleListIndex = self.cb_Modules3D.currentIndex()
-        moduleName = sorted(list(dfc.eq_od3D.keys())[moduleListIndex])
+        moduleName = sorted(list(dfc.eq_od3D.keys()))[moduleListIndex]
         equationListIndex = self.cb_Equations3D.currentIndex()
         equationNameList = sorted(list(dfc.eq_od3D[moduleName].keys()))
         equationName = equationNameList[equationListIndex]
